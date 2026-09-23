@@ -6,7 +6,7 @@ A hands-on lab where I built the IT setup for a fictional **20-person accounting
 
 ![DC01 Server Manager](screenshots/03-server-manager-dashboard.png)
 
-## 🎥 Demo: working a help desk ticket (2:55, with narration)
+## Demo: working a help desk ticket (2:55, with narration)
 
 [![Click to watch: resolving an "account expired" ticket](media/helpdesk-demo-thumbnail.jpg)](media/helpdesk-demo-bf5.mp4)
 
