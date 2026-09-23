@@ -6,6 +6,20 @@ A hands-on lab where I built the IT setup for a fictional **20-person accounting
 
 ![DC01 Server Manager](screenshots/03-server-manager-dashboard.png)
 
+## 🎥 Demo: working a help desk ticket (2:55, with narration)
+
+[![Click to watch: resolving an "account expired" ticket](media/helpdesk-demo-thumbnail.jpg)](media/helpdesk-demo-bf5.mp4)
+
+**▶ [Watch the video (MP4, 11 MB)](media/helpdesk-demo-bf5.mp4)**
+
+A user reports *"Your account has expired. Please contact your system administrator."* In the video I:
+1. pick up the ticket in the service desk queue and mark it In Progress,
+2. reproduce the error on the Windows 11 PC,
+3. find the cause in Active Directory Users and Computers (an account expiry date set in the past),
+4. fix it, confirm the user can sign in again, and resolve the ticket with a note.
+
+The ticket queue is a simple page I use for lab practice, not a commercial product.
+
 ## What I built
 
 | Area | What's in the lab |
