@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AD health: harborpoint.internal 2026-10-11</title>
+<style>
+  body { font: 14px/1.5 "Segoe UI", system-ui, sans-serif; color: #1d2329; background: #f4f5f7; margin: 0; }
+  main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 22px; margin: 0 0 4px; } h3 { font-size: 15px; margin: 0; }
+  .meta { color: #5b6570; margin: 0 0 20px; }
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+  .tile { background: #fff; border-radius: 8px; padding: 12px 16px; border-left: 4px solid; }
+  .tile b { display: block; font-size: 26px; } .tile span { color: #5b6570; }
+  .check { background: #fff; border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; }
+  .head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .area { margin-left: auto; color: #5b6570; font-size: 12px; }
+  .check p { margin: 6px 0 0; }
+  .badge { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 99px; color: #fff; }
+  .critical { background: #b42318; border-color: #b42318; } .warning { background: #b54708; border-color: #b54708; }
+  .info { background: #175cd3; border-color: #175cd3; } .ok { background: #067647; border-color: #067647; }
+  .tile.critical, .tile.warning, .tile.info, .tile.ok { background: #fff; }
+  details { margin-top: 8px; } summary { cursor: pointer; color: #5b6570; }
+  .table-wrap, details { overflow-x: auto; }
+  table { border-collapse: collapse; margin-top: 8px; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid #e4e7ec; white-space: nowrap; }
+  th { background: #f9fafb; }
+  @media (max-width: 600px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
+</style></head><body><main>
+<h1>Active Directory health report</h1>
+<p class="meta">Domain <b>harborpoint.internal</b> &middot; run on <b>DC01</b>
+(Microsoft Windows Server 2025 Standard Evaluation) &middot; up 0d 0h &middot;
+generated 2026-10-11 11:49 &middot; overall: <b>Warning</b></p>
+<div class="tiles"><div class='tile critical'><b>0</b><span>Critical</span></div>
+<div class='tile warning'><b>4</b><span>Warning</span></div>
+<div class='tile info'><b>2</b><span>Info</span></div>
+<div class='tile ok'><b>8</b><span>OK</span></div></div>
+<section class='check'>
+  <div class='head'><span class='badge warning'>Warning</span>
+  <h3>Passwords set to never expire</h3><span class='area'>Accounts</span></div>
+  <p>1 enabled account(s) skip the password expiry policy.</p>
+  <details open><summary>1 row(s)</summary><table>
+<colgroup><col/><col/><col/></colgroup>
+<tr><th>SamAccountName</th><th>Name</th><th>PasswordLastSet</th></tr>
+<tr><td>Administrator</td><td>Administrator</td><td>9/23/2026 4:06:09 PM</td></tr>
+</table>
+</details>
+</section>
+<section class='check'>
+  <div class='head'><span class='badge warning'>Warning</span>
+  <h3>Group Policy links</h3><span class='area'>Group Policy</span></div>
+  <p>1 GPO(s) exist but do not apply to anything.</p>
+  <details open><summary>1 row(s)</summary><table>
+<colgroup><col/><col/><col/></colgroup>
+<tr><th>GPO</th><th>Problem</th><th>LinksTo</th></tr>
+<tr><td>HP - Drive Mappings</td><td>Every link is disabled</td><td>harborpoint.internal/HarborPoint/Users (enabled: false)</td></tr>
+</table>
+</details>
+</section>
+<section class='check'>
+  <div class='head'><span class='badge warning'>Warning</span>
+  <h3>Pending reboot</h3><span class='area'>Server</span></div>
+  <p>Restart needed: Pending file renames.</p>
+  
+</section>
+<section class='check'>
+  <div class='head'><span class='badge warning'>Warning</span>
+  <h3>Windows updates</h3><span class='area'>Server</span></div>
+  <p>Last update (KB5043113) installed 765 day(s) ago.</p>
+  <details open><summary>3 row(s)</summary><table>
+<colgroup><col/><col/><col/></colgroup>
+<tr><th>HotFixID</th><th>Description</th><th>InstalledOn</th></tr>
+<tr><td>KB5043113</td><td>Security Update</td><td>9/6/2024 12:00:00 AM</td></tr>
+<tr><td>KB5043080</td><td>Security Update</td><td>9/6/2024 12:00:00 AM</td></tr>
+<tr><td>KB5042098</td><td>Update</td><td>9/6/2024 12:00:00 AM</td></tr>
+</table>
+</details>
+</section>
+<section class='check'>
+  <div class='head'><span class='badge info'>Info</span>
+  <h3>Privileged group members</h3><span class='area'>Accounts</span></div>
+  <p>2 account(s) are in built-in admin or operator groups. Review that each one still needs it (delegated permissions are not checked).</p>
+  <details><summary>6 row(s)</summary><table>
+<colgroup><col/><col/><col/><col/></colgroup>
+<tr><th>Group</th><th>SamAccountName</th><th>Enabled</th><th>LastLogonDate</th></tr>
+<tr><td>Domain Admins</td><td>Administrator</td><td>True</td><td>10/11/2026 11:26:17 AM</td></tr>
+<tr><td>Domain Admins</td><td>adm.ethan.brooks</td><td>True</td><td></td></tr>
+<tr><td>Enterprise Admins</td><td>Administrator</td><td>True</td><td>10/11/2026 11:26:17 AM</td></tr>
+<tr><td>Schema Admins</td><td>Administrator</td><td>True</td><td>10/11/2026 11:26:17 AM</td></tr>
+<tr><td>Administrators</td><td>Administrator</td><td>True</td><td>10/11/2026 11:26:17 AM</td></tr>
+<tr><td>Administrators</td><td>adm.ethan.brooks</td><td>True</td><td></td></tr>
+</table>
+</details>
+</section>
+<section class='check'>
+  <div class='head'><span class='badge info'>Info</span>
+  <h3>Failed sign-ins and lockouts</h3><span class='area'>Server</span></div>
+  <p>32 failed sign-in(s) in the last 24 hours, no lockouts.</p>
+  <details><summary>1 row(s)</summary><table>
+<colgroup><col/><col/><col/><col/><col/></colgroup>
+<tr><th>Account</th><th>Event</th><th>Count</th><th>Sources</th><th>Latest</th></tr>
+<tr><td>HARBORPOINT\Administrator</td><td>Failed logon</td><td>32</td><td>DC01</td><td>10/11/2026 11:30:57 AM</td></tr>
+</table>
+</details>
+</section>
+<section class='check'>
+  <div class='head'><span class='badge ok'>OK</span>
+  <h3>Disabled users still in groups</h3><span class='area'>Accounts</span></div>
+  <p>No disabled users hold group memberships.</p>
+  
+</section>
+<section class='check'>
+  <div class='head'><span class='badge ok'>OK</span>
+  <h3>Expired accounts</h3><span class='area'>Accounts</span></div>
+  <p>No enabled accounts have expired.</p>
+  
+</section>
+<section class='check'>
+  <div class='head'><span class='badge ok'>OK</span>
+  <h3>Locked-out users</h3><span class='area'>Accounts</span></div>
+  <p>No users are locked out.</p>
+  
+</section>
+<section class='check'>
+  <div class='head'><span class='badge ok'>OK</span>
+  <h3>Passwords expiring soon</h3><span class='area'>Accounts</span></div>
+  <p>No passwords expire within 14 days.</p>
+  
+</section>
+<section class='check'>
+  <div class='head'><span class='badge ok'>OK</span>
+  <h3>Stale computer accounts</h3><span class='area'>Accounts</span></div>
+  <p>Every enabled computer has contacted the domain within 90 days.</p>
+  
+</section>
+<section class='check'>
+  <div class='head'><span class='badge ok'>OK</span>
+  <h3>Stale user accounts</h3><span class='area'>Accounts</span></div>
+  <p>Every enabled user has signed in within 90 days (or is newer than that).</p>
+  
+</section>
+<section class='check'>
+  <div class='head'><span class='badge ok'>OK</span>
+  <h3>Core services</h3><span class='area'>Server</span></div>
+  <p>All 7 core services are running.</p>
+  <details><summary>7 row(s)</summary><table>
+<colgroup><col/><col/><col/><col/></colgroup>
+<tr><th>Name</th><th>DisplayName</th><th>Status</th><th>StartType</th></tr>
+<tr><td>NTDS</td><td>Active Directory Domain Services</td><td>Running</td><td>Automatic</td></tr>
+<tr><td>DNS</td><td>DNS Server</td><td>Running</td><td>Automatic</td></tr>
+<tr><td>Netlogon</td><td>Netlogon</td><td>Running</td><td>Automatic</td></tr>
+<tr><td>Kdc</td><td>Kerberos Key Distribution Center</td><td>Running</td><td>Automatic</td></tr>
+<tr><td>W32Time</td><td>Windows Time</td><td>Running</td><td>Automatic</td></tr>
+<tr><td>LanmanServer</td><td>Server</td><td>Running</td><td>Automatic</td></tr>
+<tr><td>DHCPServer</td><td>DHCP Server</td><td>Running</td><td>Automatic</td></tr>
+</table>
+</details>
+</section>
+<section class='check'>
+  <div class='head'><span class='badge ok'>OK</span>
+  <h3>Disk space</h3><span class='area'>Server</span></div>
+  <p>Lowest free space: C: at 68.7%.</p>
+  <details><summary>1 row(s)</summary><table>
+<colgroup><col/><col/><col/><col/></colgroup>
+<tr><th>Drive</th><th>SizeGB</th><th>FreeGB</th><th>FreePercent</th></tr>
+<tr><td>C:</td><td>58.8</td><td>40.4</td><td>68.7</td></tr>
+</table>
+</details>
+</section>
+</main></body></html>
