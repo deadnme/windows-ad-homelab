@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Harbor Point Service Desk</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Lab tool: a minimal ticket queue for break-fix practice. State lives in this browser's localStorage. -->
+<style>
+  :root { --bg:#f4f6f8; --panel:#fff; --line:#dde3e8; --text:#1d2b36; --muted:#5f6f7c; --brand:#0e3754;
+          --open:#c0392b; --prog:#b7791f; --done:#2f855a; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:14px/1.45 "Segoe UI", system-ui, sans-serif; background:var(--bg); color:var(--text); }
+  header { background:var(--brand); color:#fff; padding:12px 20px; display:flex; align-items:center; gap:16px; }
+  header h1 { font-size:17px; margin:0; font-weight:600; }
+  header .who { margin-left:auto; font-size:13px; opacity:.85; }
+  main { display:grid; grid-template-columns: 1.1fr 1fr; gap:16px; padding:16px 20px; height:calc(100vh - 50px); }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:6px; overflow:auto; }
+  .panel h2 { font-size:13px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:0; padding:12px 14px; border-bottom:1px solid var(--line); display:flex; }
+  .panel h2 span { margin-left:auto; text-transform:none; letter-spacing:0; }
+  table { width:100%; border-collapse:collapse; }
+  th, td { text-align:left; padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:12px; color:var(--muted); font-weight:600; background:#fafbfc; }
+  tbody tr { cursor:pointer; }
+  tbody tr:hover { background:#f0f5f9; }
+  tbody tr.sel { background:#e3eef6; }
+  .pill { display:inline-block; padding:1px 8px; border-radius:10px; font-size:12px; font-weight:600; color:#fff; white-space:nowrap; }
+  .Open { background:var(--open); } .InProgress { background:var(--prog); } .Resolved { background:var(--done); }
+  .pri-High { color:var(--open); font-weight:600; } .pri-Medium { color:var(--prog); font-weight:600; } .pri-Low { color:var(--muted); }
+  .detail { padding:14px 16px; }
+  .detail h3 { margin:0 0 4px; font-size:18px; }
+  .meta { display:grid; grid-template-columns:120px 1fr; gap:4px 10px; margin:12px 0; font-size:13px; }
+  .meta div:nth-child(odd) { color:var(--muted); }
+  .desc { background:#fafbfc; border:1px solid var(--line); border-radius:4px; padding:10px 12px; white-space:pre-wrap; }
+  .log { margin-top:14px; }
+  .log .entry { border-left:3px solid var(--line); padding:4px 10px; margin:8px 0; font-size:13px; white-space:pre-wrap; }
+  .log .entry.res { border-color:var(--done); }
+  .log .when { color:var(--muted); font-size:12px; }
+  textarea { width:100%; min-height:90px; font:inherit; padding:8px; border:1px solid var(--line); border-radius:4px; margin-top:10px; }
+  .actions { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+  button { font:inherit; padding:6px 14px; border-radius:4px; border:1px solid var(--line); background:#fff; cursor:pointer; }
+  button.primary { background:var(--brand); color:#fff; border-color:var(--brand); }
+  button.resolve { background:var(--done); color:#fff; border-color:var(--done); }
+  button:disabled { opacity:.45; cursor:default; }
+  .empty { color:var(--muted); padding:40px 16px; text-align:center; }
+  .reset { font-size:12px; color:#cfe0ec; background:none; border:none; text-decoration:underline; padding:0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Harbor Point Accounting &middot; IT Service Desk</h1>
+  <span class="who">Signed in as: Sean O. (IT Support)</span>
+  <button class="reset" id="reset" title="Put all tickets back to Open">reset demo</button>
+</header>
+<main>
+  <section class="panel">
+    <h2>Ticket queue <span id="counts"></span></h2>
+    <table>
+      <thead><tr><th>ID</th><th>Subject</th><th>Requester</th><th>Priority</th><th>Status</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+  <section class="panel" id="detail"><div class="empty">Select a ticket from the queue.</div></section>
+</main>
+<script>
+const KEY = 'hp-servicedesk-v1';
+const SEED = [
+  { id:'BF-1', subject:'Websites work, but shared drives won’t open', requester:'Rachel Kim', dept:'Sales', device:'WS01', priority:'High',
+    desc:'I can browse the internet fine, but my shared drives won’t open and the IT tool you told me to run (gpupdate) gave an error.' },
+  { id:'BF-2', subject:'P: and S: drives are missing', requester:'Rachel Kim', dept:'Sales', device:'WS01', priority:'High',
+    desc:'I signed out and back in like you said. Still no P: or S: drive. My colleagues in other departments don’t have them either.' },
+  { id:'BF-3', subject:'Access denied on the Accounting folder', requester:'Priya Patel', dept:'Accounting', device:'-', priority:'Medium',
+    desc:'Yesterday I could open the Accounting share. Today it says Access is denied.' },
+  { id:'BF-4', subject:'Can open files on P: but can’t save', requester:'Rachel Kim', dept:'Sales', device:'WS01', priority:'Medium',
+    desc:'Opening files from the Public drive works. Saving a new file there says access denied.' },
+  { id:'BF-5', subject:'“Your account has expired” at sign-in', requester:'Hannah Lee', dept:'Sales', device:'-', priority:'High',
+    desc:'When I sign in it says: "Your account has expired. Please contact your system administrator." I haven’t left the company!' },
+  { id:'BF-6', subject:'New laptop: no internet, IP starts with 169.254', requester:'Brian Foster', dept:'Operations', device:'New laptop', priority:'Medium',
+    desc:'We plugged in a new laptop and it says No internet. The IP address starts with 169.254.\n\n(To reproduce on WS01: ipconfig /release, then ipconfig /renew.)' },
+  { id:'BF-7', subject:'Locked out again after the password change', requester:'Marcus Johnson (+ Emily Carter, Liam Ortiz)', dept:'Sales', device:'-', priority:'High',
+    desc:'IT made all of us change our passwords this morning. We all did, and we’re typing the new one right. Since then we keep getting locked out. The help desk unlocks us, and ten minutes later we’re locked out again.\n\n(Lab-only: their new password is Spring-Harbor#2026.)' }
+];
+
+function fresh() {
+  const now = Date.now();
+  return SEED.map((t, i) => ({ ...t, status:'Open', created: now - (SEED.length - i) * 17 * 60000, log:[] }));
+}
+function load() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY));
+    if (!saved) return fresh();
+    const have = new Set(saved.map(t => t.id));            // keep saved progress, add tickets added since
+    return saved.concat(fresh().filter(t => !have.has(t.id)));
+  } catch { return fresh(); }
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(tickets)); } catch {} }
+const fmt = ms => new Date(ms).toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+
+let tickets = load(), selected = null;
+
+function renderQueue() {
+  const rows = document.getElementById('rows');
+  rows.innerHTML = tickets.map(t => `
+    <tr data-id="${t.id}" class="${t.id === selected ? 'sel' : ''}">
+      <td><b>${t.id}</b></td><td>${esc(t.subject)}</td><td>${esc(t.requester)}</td>
+      <td class="pri-${t.priority}">${t.priority}</td>
+      <td><span class="pill ${t.status.replace(' ', '')}">${t.status}</span></td>
+    </tr>`).join('');
+  const open = tickets.filter(t => t.status !== 'Resolved').length;
+  document.getElementById('counts').textContent = `${open} open · ${tickets.length - open} resolved`;
+}
+
+function renderDetail() {
+  const box = document.getElementById('detail');
+  const t = tickets.find(x => x.id === selected);
+  if (!t) { box.innerHTML = '<div class="empty">Select a ticket from the queue.</div>'; return; }
+  const done = t.status === 'Resolved';
+  box.innerHTML = `
+    <h2>Ticket ${t.id} <span><span class="pill ${t.status.replace(' ', '')}">${t.status}</span></span></h2>
+    <div class="detail">
+      <h3>${esc(t.subject)}</h3>
+      <div class="meta">
+        <div>Requester</div><div>${esc(t.requester)} (${esc(t.dept)})</div>
+        <div>Device</div><div>${esc(t.device)}</div>
+        <div>Priority</div><div class="pri-${t.priority}">${t.priority}</div>
+        <div>Opened</div><div>${fmt(t.created)}</div>
+        <div>Assigned to</div><div>Sean O. (IT Support)</div>
+      </div>
+      <div class="desc">${esc(t.desc)}</div>
+      <div class="log">${t.log.map(e => `
+        <div class="entry ${e.type === 'Resolution' ? 'res' : ''}"><span class="when">${fmt(e.at)} · ${e.type}</span>\n${esc(e.text)}</div>`).join('')}
+      </div>
+      <textarea id="note" placeholder="${done ? 'Ticket is resolved. Reopen it to add notes.' : 'Work notes: what you checked, what you found, what you changed...'}" ${done ? 'disabled' : ''}></textarea>
+      <div class="actions">
+        <button id="addNote" ${done ? 'disabled' : ''}>Add work note</button>
+        <button class="primary" id="start" ${t.status !== 'Open' ? 'disabled' : ''}>Start work</button>
+        <button class="resolve" id="resolve" ${done ? 'disabled' : ''}>Resolve ticket</button>
+        <button id="reopen" ${done ? '' : 'disabled'}>Reopen</button>
+      </div>
+    </div>`;
+  const note = () => document.getElementById('note').value.trim();
+  const update = (status, type, text) => {
+    if (text) t.log.push({ at: Date.now(), type, text });
+    if (status) t.status = status;
+    save(); renderQueue(); renderDetail();
+  };
+  document.getElementById('addNote').onclick = () => note() && update(null, 'Work note', note());
+  document.getElementById('start').onclick = () => update('In Progress', 'Status', 'Status changed to In Progress.');
+  document.getElementById('resolve').onclick = () => {
+    if (!note()) { alert('Write a resolution note first: what was wrong and how you fixed it.'); return; }
+    update('Resolved', 'Resolution', note());
+  };
+  document.getElementById('reopen').onclick = () => update('Open', 'Status', 'Ticket reopened.');
+}
+
+document.getElementById('rows').onclick = e => {
+  const tr = e.target.closest('tr'); if (!tr) return;
+  selected = tr.dataset.id; renderQueue(); renderDetail();
+};
+document.getElementById('reset').onclick = () => {
+  if (confirm('Reset all tickets to Open and clear notes?')) { tickets = fresh(); selected = null; save(); renderQueue(); renderDetail(); }
+};
+renderQueue();
+</script>
+</body>
+</html>

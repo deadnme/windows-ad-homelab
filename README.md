@@ -108,6 +108,7 @@ Read them in order. Each page follows the same layout: **Goal → Why a company 
 | 09 | [Help desk tickets](docs/09-helpdesk-tickets.md) | Realistic tickets worked end to end |
 | 10 | [PowerShell automation](docs/10-powershell-automation.md) | Bulk users, onboarding, offboarding, reporting |
 | 11 | [Troubleshooting and lessons](docs/11-troubleshooting-and-lessons.md) | What broke and how I fixed it |
+| 12 | [Break-fix practice](docs/12-break-fix-practice.md) | Seven unknown faults, found and fixed from the ticket alone |
 | – | [Glossary](docs/glossary.md) | Every term in one place |
 
 ## Scripts
